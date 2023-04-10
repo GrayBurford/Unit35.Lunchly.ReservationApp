@@ -1,5 +1,5 @@
-/** Express app for Lunchly. */
 
+// Express app for Lunchly
 const express = require("express");
 const nunjucks = require("nunjucks");
 const bodyParser = require("body-parser");
@@ -7,7 +7,7 @@ const routes = require("./routes");
 
 const app = express();
 
-// Parse body for urlencoded (non-JSON) data
+// Parse body for url-encoded (non-JSON) data
 app.use(bodyParser.urlencoded({ extended: false }));
 
 nunjucks.configure("templates", {
@@ -17,22 +17,23 @@ nunjucks.configure("templates", {
 
 app.use(routes);
 
-/** 404 handler */
 
+// 404 HANDLER
 app.use(function(req, res, next) {
   const err = new Error("Not Found");
   err.status = 404;
 
-  // pass the error to the next piece of middleware
+  // pass error to next piece of middleware
   return next(err);
 });
 
-/** general error handler */
 
+// GENERAL ERROR HANDLER
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
 
   return res.render("error.html", { err });
 });
+
 
 module.exports = app;

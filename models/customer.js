@@ -1,10 +1,11 @@
-/** Customer for Lunchly */
 
+// Customer Model for Lunchly
 const db = require("../db");
 const Reservation = require("./reservation");
 
-/** Customer of the restaurant. */
 
+// Customer class of the restaurant
+// static methods are called on the Customer class, not an instance of Customer
 class Customer {
   constructor({ id, firstName, lastName, phone, notes }) {
     this.id = id;
@@ -14,8 +15,8 @@ class Customer {
     this.notes = notes;
   }
 
-  /** find all customers. */
 
+  // Find all customesr
   static async all() {
     const results = await db.query(
       `SELECT id, 
@@ -29,8 +30,8 @@ class Customer {
     return results.rows.map(c => new Customer(c));
   }
 
-  /** get a customer by ID. */
 
+  // Get a customer object by ID
   static async get(id) {
     const results = await db.query(
       `SELECT id, 
@@ -53,14 +54,14 @@ class Customer {
     return new Customer(customer);
   }
 
-  /** get all reservations for this customer. */
 
+  // Get all reservations for a customer
   async getReservations() {
     return await Reservation.getReservationsForCustomer(this.id);
   }
 
-  /** save this customer. */
 
+  // Save this customer
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
@@ -78,6 +79,16 @@ class Customer {
       );
     }
   }
+
+  // Return full name of a customer
+  fullName() {
+    if (this.firstName && this.lastName) {
+      return `${this.firstName} ${this.lastName}`
+    }
+  }
+
+
+
 }
 
 module.exports = Customer;

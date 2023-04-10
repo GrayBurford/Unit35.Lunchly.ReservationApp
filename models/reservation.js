@@ -1,12 +1,11 @@
-/** Reservation for Lunchly */
 
+// Reservation for Lunchly
 const moment = require("moment");
 
 const db = require("../db");
 
 
-/** A reservation for a party */
-
+// A reservation for a party
 class Reservation {
   constructor({id, customerId, numGuests, startAt, notes}) {
     this.id = id;
@@ -16,14 +15,14 @@ class Reservation {
     this.notes = notes;
   }
 
-  /** formatter for startAt */
 
+  // Formatter for startAt property
   getformattedStartAt() {
     return moment(this.startAt).format('MMMM Do YYYY, h:mm a');
   }
 
-  /** given a customer id, find their reservations. */
 
+  // Given a customer id, find their reservations
   static async getReservationsForCustomer(customerId) {
     const results = await db.query(
           `SELECT id, 
@@ -38,6 +37,22 @@ class Reservation {
 
     return results.rows.map(row => new Reservation(row));
   }
+
+
+  // Save a customer's reservation details
+  async save() {
+    if (this.id === undefined) {
+      const result = await db.query(
+        `INSERT INTO reservations (customer_id, start_at, num_guests, notes) VALUES ($1, $2, $3, $3) RETURNING id`, [this.customerId, this.startAt, this.numGuests, this.notes]
+      );
+      this.id = result.rows[0].id;
+    } else {
+      await db.query(
+        `UPDATE reservations SET customer_id=$1, start_at=$2, num_guests=$3, notes=$4`, [this.customerId, this.startAt, this.numGuests, this.notes]
+      );
+    }
+  }
+
 }
 
 
